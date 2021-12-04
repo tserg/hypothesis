@@ -15,7 +15,7 @@
 
 import threading
 from inspect import signature
-from typing import TYPE_CHECKING, Callable, Dict
+from typing import TYPE_CHECKING, Callable, Dict, cast
 
 from hypothesis.internal.cache import LRUReusedCache
 from hypothesis.internal.floats import float_to_int
@@ -66,7 +66,7 @@ def clear_cache() -> None:
 def cacheable(fn: "T") -> "T":
     from hypothesis.strategies._internal.strategies import SearchStrategy
 
-    @proxies(fn)
+    @proxies(fn)  # type: ignore
     def cached_strategy(*args, **kwargs):
         try:
             kwargs_cache_key = {(k, convert_value(v)) for k, v in kwargs.items()}
@@ -86,7 +86,7 @@ def cacheable(fn: "T") -> "T":
             return result
 
     cached_strategy.__clear_cache = clear_cache
-    return cached_strategy
+    return cast("T", cached_strategy)
 
 
 def defines_strategy(
